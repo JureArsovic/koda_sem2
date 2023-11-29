@@ -5,13 +5,15 @@ from PIL import Image
 def process_image(image_path):
     # Your image processing code goes here
     # For example, let's just write the image path to a new file for demonstration purposes
-    result = f"Processed image: {image_path}\n"
+    ime = str({image_path})[13:]
+    ime = ime[:-2]
+    result = '["' + ime + '",'
     colors, pixel_count = extcolors.extract_from_path(image_path)
 
     #print(colors)
     # Write the result to a new file
     with open('barve.txt', 'a') as result_file:
-        result_file.write(result + '\n' + str(colors) + '\n'+ '\n')
+        result_file.write(result + str(colors) + '],\n'+ '\n')
 
 def process_images_in_folder(folder_path):
     # Get the list of files in the folder
