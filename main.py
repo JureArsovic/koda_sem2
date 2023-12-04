@@ -1,7 +1,23 @@
 import tkinter as tk
-from tkinter import Label, Button
+from tkinter import Label, Button, filedialog
+from PIL import Image, ImageTk
 from styling import setup_styles
 from logic import upload_image, capture_image_from_webcam, primerjaj
+
+# Function to handle button clicks
+def handle_upload_and_primerjaj():
+    upload_image(root, image_label, style)
+    result = sorted(primerjaj('barve.txt', './img/upload.png'))
+    najblizja = result[0][2] if result else "No result"
+    status_label.config(text=f"Status: Result - {najblizja}")
+    display_poster(result)
+
+def handle_capture_and_primerjaj():
+    capture_image_from_webcam(root, image_label, style)
+    result = sorted(primerjaj('barve.txt', './capturedImages/CapturedImage.png'))
+    najblizja = result[0][2] if result else "No result"
+    status_label.config(text=f"Status: Result - {najblizja}")
+    display_poster(result)
 
 # Main application setup
 root = tk.Tk()
@@ -24,32 +40,31 @@ app_title.pack(side="left", padx=20)
 
 # Content
 image_label = tk.Label(content, bg=style["bg"])
-image_label.pack(pady=20)
+image_label.grid(row=0, column=0, padx=20, pady=20)
 
-
-def handle_upload_and_primerjaj():
-    upload_image(root, image_label, style)
-    result = sorted(primerjaj('barve.txt', './img/upload.png'))
-    najblizja = result[0][2] if result else "No result"
-    print(result)
-    status_label.config(text=f"Status: Result - {najblizja}")
-
-
-def handle_capture_and_primerjaj():
-    capture_image_from_webcam(root, image_label, style)  # Modify capture_image_from_webcam to return the file path
-    result = sorted(primerjaj('barve.txt', './capturedImages/CapturedImage.png'))
-    najblizja = result[0][2] if result else "No result"
-    status_label.config(text=f"Status: Result - {najblizja}")
-
+poster_label = tk.Label(content, bg=style["bg"])
+poster_label.grid(row=0, column=1, padx=20, pady=20)
 
 upload_button = Button(content, text="Upload Image", command=handle_upload_and_primerjaj, **style["button"])
-upload_button.pack(pady=20)
+upload_button.grid(row=1, column=0, padx=20, pady=20)
 
 capture_button = Button(content, text="Capture Image", command=handle_capture_and_primerjaj, **style["button"])
-capture_button.pack(pady=20)
+capture_button.grid(row=1, column=1, padx=20, pady=20)
 
 # Footer
 status_label = Label(footer, text="Status: Ready", **style["label"])
 status_label.pack(side="left", padx=20)
+
+def display_poster(result):
+    if result:
+        poster_path = f"./posters/{result[0][2]}"
+        poster_image = Image.open(poster_path)
+        poster_image = poster_image.resize((300, 300), Image.Resampling.LANCZOS)
+        poster_photo = ImageTk.PhotoImage(poster_image)
+        poster_label.config(image=poster_photo)
+        poster_label.image = poster_photo
+        poster_label.configure(text="Poster", compound="top")
+    else:
+        poster_label.configure(image='', text="No result")
 
 root.mainloop()
