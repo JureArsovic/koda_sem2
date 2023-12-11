@@ -8,6 +8,8 @@ import numpy as np
 import re
 import ast
 import extcolors
+import cv2
+from deepface import DeepFace
 
 
 def upload_image(root, image_label, style):
@@ -36,6 +38,34 @@ def upload_image(root, image_label, style):
 
         except Exception as e:
             print(f"Error opening image: {e}")
+
+
+def detect_faces(image_path):
+    # Load the cascade
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+    # Read the input image
+    img = cv2.imread(image_path)
+
+    # Check if image is loaded
+    if img is None:
+        print("Error: Image not found.")
+        return
+
+    # Convert into grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Detect faces
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+
+    # Draw rectangle around the faces
+    for (x, y, w, h) in faces:
+        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+    # Display the output
+    cv2.imshow('Detected Faces', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 def capture_image_from_webcam(root, image_label, style):

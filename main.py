@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import Label, Button, filedialog
 from PIL import Image, ImageTk
 from styling import setup_styles
-from logic import upload_image, capture_image_from_webcam, primerjaj
+from logic import detect_faces, upload_image, capture_image_from_webcam, primerjaj
+
+
 
 # Function to handle button clicks
 def handle_upload_and_primerjaj():
@@ -12,14 +14,16 @@ def handle_upload_and_primerjaj():
     status_label.config(text=f"Status: Result - {najblizja}")
     display_poster(result)
 
+
 def handle_capture_and_primerjaj():
     capture_image_from_webcam(root, image_label, style)
+    detect_faces('./capturedImages/CapturedImage.png')
     result = sorted(primerjaj('barve.txt', './capturedImages/CapturedImage.png'))
     najblizja = result[0][2] if result else "No result"
     status_label.config(text=f"Status: Result - {najblizja}")
     display_poster(result)
 
-# Main application setup
+
 root = tk.Tk()
 root.title("Image Upload Example")
 root.state('zoomed')
@@ -55,6 +59,7 @@ capture_button.grid(row=1, column=1, padx=20, pady=20)
 status_label = Label(footer, text="Status: Ready", **style["label"])
 status_label.pack(side="left", padx=20)
 
+
 def display_poster(result):
     if result:
         poster_path = f"./posters/{result[0][2]}"
@@ -66,5 +71,6 @@ def display_poster(result):
         poster_label.configure(text="Poster", compound="top")
     else:
         poster_label.configure(image='', text="No result")
+
 
 root.mainloop()
