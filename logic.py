@@ -19,7 +19,7 @@ def upload_image(root, image_label, style):
     if file_path:
         try:
             image = Image.open(file_path)
-            image = image.resize((300, 300), Image.Resampling.LANCZOS)
+            #image = image.resize((300, 300), Image.Resampling.LANCZOS)
             photo = ImageTk.PhotoImage(image)
 
             if image_label:
@@ -157,3 +157,97 @@ def primerjaj(dataFile_path, pictureFile_path):
             (ujemanjeFun(dataTransformed[i][1], colors), i, dataTransformed[i][0]))
 
     return seznamPosterjev
+
+def save_largest_face():
+    # Load the cascade
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+    # Path to the specific image
+    img_path = 'capturedImages/CapturedImage.png'
+    face_dir = 'capturedImages/face'
+
+    # Create face directory if it doesn't exist
+    if not os.path.exists(face_dir):
+        os.makedirs(face_dir)
+
+    # Load the image
+    img = cv2.imread(img_path)
+
+    # Check if image is loaded
+    if img is None:
+        print(f"Error: Image {img_path} not found.")
+        return
+
+    # Convert into grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Detect faces
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+
+    if len(faces) == 0:
+        print(f"No faces found in {img_path}")
+        return
+
+    # Find the largest face
+    largest_face = max(faces, key=lambda face: face[2] * face[3])
+
+    # Extract the largest face
+    x, y, w, h = largest_face
+    face = img[y:y+h, x:x+w]
+
+    # Save the face under the same name in the new directory
+    cv2.imwrite(os.path.join(face_dir, 'CapturedImage.png'), face)
+
+def save_largest_face_upload():
+    # Load the cascade
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+    # Path to the specific image
+    img_path = 'img/upload.png'
+    face_dir = 'img/face'
+
+    # Create face directory if it doesn't exist
+    if not os.path.exists(face_dir):
+        os.makedirs(face_dir)
+
+    # Load the image
+    img = cv2.imread(img_path)
+
+    # Check if image is loaded
+    if img is None:
+        print(f"Error: Image {img_path} not found.")
+        return
+
+    # Convert into grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Detect faces
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+
+    if len(faces) == 0:
+        print(f"No faces found in {img_path}")
+        return
+
+    # Find the largest face
+    largest_face = max(faces, key=lambda face: face[2] * face[3])
+
+    # Extract the largest face
+    x, y, w, h = largest_face
+    face = img[y:y+h, x:x+w]
+
+    # Save the face under the same name in the new directory
+    cv2.imwrite(os.path.join(face_dir, 'upload.png'), face)
+
+def imageSimilarity(img1, img2): #vrne med -1 in 1 (1 je najbolj podobno)
+    image1 = cv2.imread(img1)
+    image2 = cv2.imread(img2)
+    hist_img1 = cv2.calcHist([image1], [0, 1, 2], None, [256, 256, 256], [0, 256, 0, 256, 0, 256])
+    hist_img1[255, 255, 255] = 0 #ignore all white pixels
+    cv2.normalize(hist_img1, hist_img1, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
+    hist_img2 = cv2.calcHist([image2], [0, 1, 2], None, [256, 256, 256], [0, 256, 0, 256, 0, 256])
+    hist_img2[255, 255, 255] = 0  #ignore all white pixels
+    cv2.normalize(hist_img2, hist_img2, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
+    # Find the metric value
+    metric_val = cv2.compareHist(hist_img1, hist_img2, cv2.HISTCMP_CORREL)
+    #print(f"Similarity Score: ", round(metric_val, 2))
+    return metric_val

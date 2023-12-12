@@ -1,14 +1,24 @@
+import os
 import tkinter as tk
 from tkinter import Label, Button, filedialog
 from PIL import Image, ImageTk
 from styling import setup_styles
-from logic import detect_faces, upload_image, capture_image_from_webcam, primerjaj
+from logic import detect_faces, upload_image, capture_image_from_webcam, primerjaj, save_largest_face, save_largest_face_upload, imageSimilarity
 
 
-
-# Function to handle button clicks
 def handle_upload_and_primerjaj():
     upload_image(root, image_label, style)
+    save_largest_face_upload()
+    similarity_results = []
+    faces_dir = 'faces'
+    img1 = './img/face/upload.png'
+    for filename in os.listdir(faces_dir):
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            img2 = os.path.join(faces_dir, filename)
+            similarity_index = imageSimilarity(img1, img2)
+            similarity_results.append((similarity_index, filename))
+    similarity_results.sort(reverse=True)
+    print(similarity_results)
     result = sorted(primerjaj('barve.txt', './img/upload.png'))
     najblizja = result[0][2] if result else "No result"
     status_label.config(text=f"Status: Result - {najblizja}")
@@ -17,6 +27,17 @@ def handle_upload_and_primerjaj():
 
 def handle_capture_and_primerjaj():
     capture_image_from_webcam(root, image_label, style)
+    save_largest_face()
+    similarity_results = []
+    faces_dir = 'faces'
+    img1 = './capturedImages/CapturedImage.png'
+    for filename in os.listdir(faces_dir):
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            img2 = os.path.join(faces_dir, filename)
+            similarity_index = imageSimilarity(img1, img2)
+            similarity_results.append((similarity_index, filename))
+    similarity_results.sort(reverse=True)
+    print(similarity_results)
     detect_faces('./capturedImages/CapturedImage.png')
     result = sorted(primerjaj('barve.txt', './capturedImages/CapturedImage.png'))
     najblizja = result[0][2] if result else "No result"

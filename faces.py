@@ -44,4 +44,5 @@ def save_largest_face_from_directory():
             # Save the face
             cv2.imwrite(os.path.join(faces_dir, filename), face)
 
+
 save_largest_face_from_directory()
