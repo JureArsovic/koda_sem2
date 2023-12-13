@@ -18,14 +18,11 @@ def upload_image(root, image_label, style):
 
     if file_path:
         try:
-            # Open the original image
             original_image = Image.open(file_path)
 
-            # Resize the image for display
             display_image = original_image.resize((300, 300), Image.Resampling.LANCZOS)
             photo = ImageTk.PhotoImage(display_image)
 
-            # Display the resized image
             if image_label:
                 image_label.config(image=photo)
                 image_label.image = photo
@@ -34,7 +31,6 @@ def upload_image(root, image_label, style):
                 image_label.image = photo
                 image_label.pack()
 
-            # Save the original image to the "/img" folder as "upload.png"
             img_dir = os.path.join(os.getcwd(), "img")
             os.makedirs(img_dir, exist_ok=True)
             img_save_path = os.path.join(img_dir, "upload.png")
@@ -46,28 +42,21 @@ def upload_image(root, image_label, style):
 
 
 def detect_faces(image_path):
-    # Load the cascade
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-    # Read the input image
     img = cv2.imread(image_path)
 
-    # Check if image is loaded
     if img is None:
         print("Error: Image not found.")
         return
 
-    # Convert into grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Detect faces
     faces = face_cascade.detectMultiScale(gray, 1.1, 4)
 
-    # Draw rectangle around the faces
     for (x, y, w, h) in faces:
         cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
-    # Display the output
     cv2.imshow('Detected Faces', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -97,15 +86,11 @@ def capture_image_from_webcam(root, image_label, style):
             imwrite(image_path, frame)
             messagebox.showinfo("Success", "Image captured and saved.")
 
-            # Load the image
             image = Image.open(image_path)
-
-            # Calculate new dimensions
             base_width = 300
             w_percent = (base_width / float(image.size[0]))
             h_size = int((float(image.size[1]) * float(w_percent)))
 
-            # Resize the image maintaining the aspect ratio
             image = image.resize((base_width, h_size),
                                  Image.Resampling.LANCZOS)
             photo = ImageTk.PhotoImage(image)
@@ -142,7 +127,6 @@ def ujemanjeFun(poster, slika):
 
 
 def primerjaj(dataFile_path, pictureFile_path):
-    # Read the content of the data file
     with open(dataFile_path, 'r') as file:
         data = file.read()
 
@@ -164,29 +148,20 @@ def primerjaj(dataFile_path, pictureFile_path):
     return seznamPosterjev
 
 def save_largest_face():
-    # Load the cascade
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-    # Path to the specific image
     img_path = 'capturedImages/CapturedImage.png'
     face_dir = 'capturedImages/face'
 
-    # Create face directory if it doesn't exist
     if not os.path.exists(face_dir):
         os.makedirs(face_dir)
 
-    # Load the image
     img = cv2.imread(img_path)
 
-    # Check if image is loaded
     if img is None:
         print(f"Error: Image {img_path} not found.")
         return
-
-    # Convert into grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # Detect faces
     faces = face_cascade.detectMultiScale(gray, 1.1, 4)
 
     if len(faces) == 0:
@@ -195,35 +170,25 @@ def save_largest_face():
 
     # Find the largest face
     largest_face = max(faces, key=lambda face: face[2] * face[3])
-
-    # Extract the largest face
     x, y, w, h = largest_face
     face = img[y:y+h, x:x+w]
 
-    # Save the face under the same name in the new directory
     cv2.imwrite(os.path.join(face_dir, 'CapturedImage.png'), face)
 
 def save_largest_face_upload():
-    # Load the cascade
+    #cascade
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-
-    # Path to the specific image
     img_path = 'img/upload.png'
     face_dir = 'img/face'
 
-    # Create face directory if it doesn't exist
     if not os.path.exists(face_dir):
         os.makedirs(face_dir)
 
-    # Load the image
     img = cv2.imread(img_path)
 
-    # Check if image is loaded
     if img is None:
         print(f"Error: Image {img_path} not found.")
         return
-
-    # Convert into grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Detect faces
@@ -235,25 +200,21 @@ def save_largest_face_upload():
 
     # Find the largest face
     largest_face = max(faces, key=lambda face: face[2] * face[3])
-
-    # Extract the largest face
     x, y, w, h = largest_face
     face = img[y:y+h, x:x+w]
 
-    # Save the face under the same name in the new directory
     cv2.imwrite(os.path.join(face_dir, 'upload.png'), face)
 
-def imageSimilarity(img1, img2): #vrne med -1 in 1 (1 je najbolj podobno)
+def imageSimilarity(img1, img2):
     #print("Image similarity: ", img1, img2)
     image1 = cv2.imread(img1)
     image2 = cv2.imread(img2)
     hist_img1 = cv2.calcHist([image1], [0, 1, 2], None, [256, 256, 256], [0, 256, 0, 256, 0, 256])
-    hist_img1[255, 255, 255] = 0 #ignore all white pixels
+    hist_img1[255, 255, 255] = 0
     cv2.normalize(hist_img1, hist_img1, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
     hist_img2 = cv2.calcHist([image2], [0, 1, 2], None, [256, 256, 256], [0, 256, 0, 256, 0, 256])
-    hist_img2[255, 255, 255] = 0  #ignore all white pixels
+    hist_img2[255, 255, 255] = 0
     cv2.normalize(hist_img2, hist_img2, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
-    # Find the metric value
     metric_val = cv2.compareHist(hist_img1, hist_img2, cv2.HISTCMP_CORREL)
     #print(f"Similarity Score: ", round(metric_val, 2))
     return metric_val
@@ -267,7 +228,6 @@ def combine(arr1, arr2):
 
     # Iterate through both arrays
     for (a, _), (c, _, g) in zip(arr1, arr2):
-        # Calculate f using the given formula
         f = 0.6 * a + 0.4 * (1-c)
         combined.append((f, g))
     combined.sort(reverse=True)

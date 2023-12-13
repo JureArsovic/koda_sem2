@@ -55,7 +55,7 @@ root.state('zoomed')
 
 style = setup_styles()
 
-# Layout using frames
+# Layout
 header = tk.Frame(root, bg=style["bg"], height=50)
 content = tk.Frame(root, bg=style["bg"])
 footer = tk.Frame(root, bg=style["bg"], height=30)
