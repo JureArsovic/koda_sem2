@@ -26,13 +26,16 @@ def ujemanjeFun(poster, slika):
     return ujemanje
 
 def primerjaj(dataFile_path, pictureFile_path):
+    print("DATAFILEPATH: ", dataFile_path)
+    print("PICTUREFILEPATH: ", pictureFile_path)
     # Read the content of the data file
+
     with open(dataFile_path, 'r') as file:
         data = file.read()
 
     colors = extcolors.extract_from_path(pictureFile_path)
     del colors[0][4:]
-
+    print(colors)
     dataTransformed = ast.literal_eval(data)
     #print(dataTransformed[1][1])
 
@@ -49,4 +52,4 @@ def primerjaj(dataFile_path, pictureFile_path):
 
 posterji = 'barve.txt'
 slika = './capturedImages/CapturedImage.png'
-print(sorted(primerjaj(posterji, slika)))
+print(primerjaj(posterji, slika))

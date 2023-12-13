@@ -18,10 +18,14 @@ def upload_image(root, image_label, style):
 
     if file_path:
         try:
-            image = Image.open(file_path)
-            #image = image.resize((300, 300), Image.Resampling.LANCZOS)
-            photo = ImageTk.PhotoImage(image)
+            # Open the original image
+            original_image = Image.open(file_path)
 
+            # Resize the image for display
+            display_image = original_image.resize((300, 300), Image.Resampling.LANCZOS)
+            photo = ImageTk.PhotoImage(display_image)
+
+            # Display the resized image
             if image_label:
                 image_label.config(image=photo)
                 image_label.image = photo
@@ -30,14 +34,15 @@ def upload_image(root, image_label, style):
                 image_label.image = photo
                 image_label.pack()
 
-            # Save the image to the "/img" folder as "upload.png"
+            # Save the original image to the "/img" folder as "upload.png"
             img_dir = os.path.join(os.getcwd(), "img")
             os.makedirs(img_dir, exist_ok=True)
             img_save_path = os.path.join(img_dir, "upload.png")
-            image.save(img_save_path)
+            original_image.save(img_save_path)
 
         except Exception as e:
             print(f"Error opening image: {e}")
+
 
 
 def detect_faces(image_path):
@@ -239,6 +244,7 @@ def save_largest_face_upload():
     cv2.imwrite(os.path.join(face_dir, 'upload.png'), face)
 
 def imageSimilarity(img1, img2): #vrne med -1 in 1 (1 je najbolj podobno)
+    #print("Image similarity: ", img1, img2)
     image1 = cv2.imread(img1)
     image2 = cv2.imread(img2)
     hist_img1 = cv2.calcHist([image1], [0, 1, 2], None, [256, 256, 256], [0, 256, 0, 256, 0, 256])
@@ -251,3 +257,39 @@ def imageSimilarity(img1, img2): #vrne med -1 in 1 (1 je najbolj podobno)
     metric_val = cv2.compareHist(hist_img1, hist_img2, cv2.HISTCMP_CORREL)
     #print(f"Similarity Score: ", round(metric_val, 2))
     return metric_val
+
+def combine(arr1, arr2):
+    arr1 = scale_tuple_values(arr1)
+    arr2 = scale_tuple_values(arr2)
+    #print(sorted(arr1))
+    #print(sorted(arr2))
+    combined = []
+
+    # Iterate through both arrays
+    for (a, _), (c, _, g) in zip(arr1, arr2):
+        # Calculate f using the given formula
+        f = 0.6 * a + 0.4 * (1-c)
+        combined.append((f, g))
+    combined.sort(reverse=True)
+    print(combined)
+
+    return combined
+    
+
+
+
+
+def scale_tuple_values(arr):
+    # Extract first values from each tuple in the array
+    values = [item[0] for item in arr]
+
+    # Min-max scaling for these values
+    min_val, max_val = min(values), max(values)
+    scaled_values = [(val - min_val) / (max_val - min_val) if max_val > min_val else 0 for val in values]
+
+    # Create a new array with scaled values while keeping the other elements of the tuples intact
+    scaled_arr = [(scaled_values[idx],) + arr[idx][1:] for idx in range(len(arr))]
+
+    return scaled_arr
+
+primerjaj('barve.txt', './img/upload.png')

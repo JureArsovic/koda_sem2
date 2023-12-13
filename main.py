@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import Label, Button, filedialog
 from PIL import Image, ImageTk
 from styling import setup_styles
-from logic import detect_faces, upload_image, capture_image_from_webcam, primerjaj, save_largest_face, save_largest_face_upload, imageSimilarity
+from logic import upload_image, capture_image_from_webcam, primerjaj, save_largest_face, save_largest_face_upload, imageSimilarity, combine
 
 
 def handle_upload_and_primerjaj():
@@ -17,12 +17,16 @@ def handle_upload_and_primerjaj():
             img2 = os.path.join(faces_dir, filename)
             similarity_index = imageSimilarity(img1, img2)
             similarity_results.append((similarity_index, filename))
-    similarity_results.sort(reverse=True)
-    print(similarity_results)
-    result = sorted(primerjaj('barve.txt', './img/upload.png'))
-    najblizja = result[0][2] if result else "No result"
+    #similarity_results.sort(reverse=True)
+    #print("Zaznava obraza:\n")
+    #print(similarity_results)
+    result = primerjaj('barve.txt', './img/upload.png')
+    #print("Barvna sestava:\n")
+    #print(result)
+    combined = combine(similarity_results, result)
+    najblizja = combined[0][1] if result else "No result"
     status_label.config(text=f"Status: Result - {najblizja}")
-    display_poster(result)
+    display_poster(najblizja)
 
 
 def handle_capture_and_primerjaj():
@@ -30,19 +34,19 @@ def handle_capture_and_primerjaj():
     save_largest_face()
     similarity_results = []
     faces_dir = 'faces'
-    img1 = './capturedImages/CapturedImage.png'
+    img1 = './capturedImages/face/CapturedImage.png'
     for filename in os.listdir(faces_dir):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             img2 = os.path.join(faces_dir, filename)
             similarity_index = imageSimilarity(img1, img2)
             similarity_results.append((similarity_index, filename))
-    similarity_results.sort(reverse=True)
-    print(similarity_results)
-    detect_faces('./capturedImages/CapturedImage.png')
-    result = sorted(primerjaj('barve.txt', './capturedImages/CapturedImage.png'))
-    najblizja = result[0][2] if result else "No result"
+    #similarity_results.sort(reverse=True)
+    #print(similarity_results)
+    result = primerjaj('barve.txt', './capturedImages/CapturedImage.png')
+    combined = combine(similarity_results, result)
+    najblizja = combined[0][1] if result else "No result"
     status_label.config(text=f"Status: Result - {najblizja}")
-    display_poster(result)
+    display_poster(najblizja)
 
 
 root = tk.Tk()
@@ -83,13 +87,13 @@ status_label.pack(side="left", padx=20)
 
 def display_poster(result):
     if result:
-        poster_path = f"./posters/{result[0][2]}"
+        poster_path = f"./posters/{result}"
         poster_image = Image.open(poster_path)
         poster_image = poster_image.resize((300, 300), Image.Resampling.LANCZOS)
         poster_photo = ImageTk.PhotoImage(poster_image)
         poster_label.config(image=poster_photo)
         poster_label.image = poster_photo
-        poster_label.configure(text="Poster", compound="top")
+        poster_label.configure(compound="top")
     else:
         poster_label.configure(image='', text="No result")
 
