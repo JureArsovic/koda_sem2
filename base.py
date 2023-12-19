@@ -1,16 +1,22 @@
 import cv2
+from turtle import distance
+import face_recognition
+import face_recognition
 
-# Load the cascade
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-# Read the input image
-img = cv2.imread('./capturedImages/CapturedImage.png')
-# Convert into grayscale
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-# Detect faces
-faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-# Draw rectangle around the faces
-for (x, y, w, h) in faces:
-    cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-# Display the output
-cv2.imshow('img', img)
-cv2.waitKey()
+image = face_recognition.load_image_file("./img/face/upload.png")
+image2 = face_recognition.load_image_file("faces/Big Fat Quiz (2004).jpeg")
+face_landmarks_list = face_recognition.face_landmarks(image)
+face_encodings_1 = face_recognition.face_encodings(image)
+face_encodings_2 = face_recognition.face_encodings(image2)
+#smaller distance = more similar
+distance = face_recognition.face_distance([face_encodings_1[0]], face_encodings_2[0])
+#print(distance)
+distance = distance[0]
+print(distance)
+
+""" face_encodings_1 = face_recognition.face_encodings(img1)
+    face_encodings_2 = face_recognition.face_encodings(img2)
+    distance = face_recognition.face_distance([face_encodings_1[0]], face_encodings_2[0])
+    print(distance)
+    distance = distance[0]
+    print(distance) """

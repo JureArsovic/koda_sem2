@@ -1,3 +1,4 @@
+from math import dist
 import tkinter as tk
 import os
 from tkinter import filedialog
@@ -10,7 +11,10 @@ import ast
 import extcolors
 import cv2
 from deepface import DeepFace
+import face_recognition
 
+#FACE DETECTION -> OPENCV (+ TRAINED CLASSIFIER XML FILE)
+#FACE RECOGNITION -> HISTOGRAM COMPARISON (NON WHITE PIXELS)
 
 def upload_image(root, image_label, style):
     file_types = [('JPEG Files', '*.jpeg;*.jpg'), ('PNG Files', '*.png')]
@@ -206,18 +210,23 @@ def save_largest_face_upload():
     cv2.imwrite(os.path.join(face_dir, 'upload.png'), face)
 
 def imageSimilarity(img1, img2):
-    #print("Image similarity: ", img1, img2)
-    image1 = cv2.imread(img1)
-    image2 = cv2.imread(img2)
-    hist_img1 = cv2.calcHist([image1], [0, 1, 2], None, [256, 256, 256], [0, 256, 0, 256, 0, 256])
-    hist_img1[255, 255, 255] = 0
-    cv2.normalize(hist_img1, hist_img1, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
-    hist_img2 = cv2.calcHist([image2], [0, 1, 2], None, [256, 256, 256], [0, 256, 0, 256, 0, 256])
-    hist_img2[255, 255, 255] = 0
-    cv2.normalize(hist_img2, hist_img2, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
-    metric_val = cv2.compareHist(hist_img1, hist_img2, cv2.HISTCMP_CORREL)
-    #print(f"Similarity Score: ", round(metric_val, 2))
-    return metric_val
+    #face_landmarks_list = face_recognition.face_landmarks(image)
+    image1 = face_recognition.load_image_file(img1)
+    image2 = face_recognition.load_image_file(img2)
+    face_encodings_1 = face_recognition.face_encodings(image1)
+    face_encodings_2 = face_recognition.face_encodings(image2)
+    #smaller distance = more similar
+    if face_encodings_1 and face_encodings_2:
+        distance = face_recognition.face_distance([face_encodings_1[0]], face_encodings_2[0])
+    else:
+        distance = [1]
+    #print(distance)
+    distance = distance[0]
+    #print(img1, img2)
+    #print(1-distance)
+    distance = 1-distance
+
+    return distance
 
 def combine(arr1, arr2):
     arr1 = scale_tuple_values(arr1)
@@ -228,10 +237,11 @@ def combine(arr1, arr2):
 
     # Iterate through both arrays
     for (a, _), (c, _, g) in zip(arr1, arr2):
-        f = 0.6 * a + 0.4 * (1-c)
+        print(a, c)
+        f = 0.7 * a + 0.3 * (1-c)
         combined.append((f, g))
     combined.sort(reverse=True)
-    print(combined)
+    #print(combined)
 
     return combined
     

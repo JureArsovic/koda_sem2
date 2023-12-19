@@ -5,6 +5,8 @@ from PIL import Image, ImageTk
 from styling import setup_styles
 from logic import upload_image, capture_image_from_webcam, primerjaj, save_largest_face, save_largest_face_upload, imageSimilarity, combine
 
+#FACE DETECTION -> OPENCV (+ TRAINED CLASSIFIER XML FILE)
+#FACE comparison -> HISTOGRAM COMPARISON (NON WHITE PIXELS)
 
 def handle_upload_and_primerjaj():
     upload_image(root, image_label, style)
@@ -19,7 +21,6 @@ def handle_upload_and_primerjaj():
             similarity_results.append((similarity_index, filename))
     #similarity_results.sort(reverse=True)
     #print("Zaznava obraza:\n")
-    #print(similarity_results)
     result = primerjaj('barve.txt', './img/upload.png')
     #print("Barvna sestava:\n")
     #print(result)
@@ -40,7 +41,7 @@ def handle_capture_and_primerjaj():
             img2 = os.path.join(faces_dir, filename)
             similarity_index = imageSimilarity(img1, img2)
             similarity_results.append((similarity_index, filename))
-    #similarity_results.sort(reverse=True)
+            #print(similarity_index, filename)
     #print(similarity_results)
     result = primerjaj('barve.txt', './capturedImages/CapturedImage.png')
     combined = combine(similarity_results, result)
