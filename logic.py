@@ -247,8 +247,6 @@ def combine(arr1, arr2):
     
 
 
-
-
 def scale_tuple_values(arr):
     # Extract first values from each tuple in the array
     values = [item[0] for item in arr]
