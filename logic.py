@@ -237,11 +237,11 @@ def combine(arr1, arr2):
 
     # Iterate through both arrays
     for (a, _), (c, _, g) in zip(arr1, arr2):
-        print(a, c)
+        #print(a, b, c)
         f = 0.7 * a + 0.3 * (1-c)
         combined.append((f, g))
     combined.sort(reverse=True)
-    #print(combined)
+    #print(a, b)
 
     return combined
     
