@@ -1,3 +1,4 @@
+import json
 from math import dist
 import tkinter as tk
 import os
@@ -209,23 +210,14 @@ def save_largest_face_upload():
 
     cv2.imwrite(os.path.join(face_dir, 'upload.png'), face)
 
-def imageSimilarity(img1, img2):
-    #face_landmarks_list = face_recognition.face_landmarks(image)
-    image1 = face_recognition.load_image_file(img1)
-    image2 = face_recognition.load_image_file(img2)
-    face_encodings_1 = face_recognition.face_encodings(image1)
-    face_encodings_2 = face_recognition.face_encodings(image2)
-    #smaller distance = more similar
-    if face_encodings_1 and face_encodings_2:
-        distance = face_recognition.face_distance([face_encodings_1[0]], face_encodings_2[0])
+def imageSimilarity(fv1, fv2):
+    if fv1:
+        #print(feature_vector_index, face_encodings_1[0])
+        distance = face_recognition.face_distance([fv1[0]], fv2)
     else:
         distance = [1]
-    #print(distance)
     distance = distance[0]
-    #print(img1, img2)
-    #print(1-distance)
     distance = 1-distance
-
     return distance
 
 def combine(arr1, arr2):
@@ -236,7 +228,7 @@ def combine(arr1, arr2):
     combined = []
 
     # Iterate through both arrays
-    for (a, _), (c, _, g) in zip(arr1, arr2):
+    for (a, b), (c, _, g) in zip(arr1, arr2):
         #print(a, b, c)
         f = 0.7 * a + 0.3 * (1-c)
         combined.append((f, g))
@@ -260,4 +252,4 @@ def scale_tuple_values(arr):
 
     return scaled_arr
 
-primerjaj('barve.txt', './img/upload.png')
+#primerjaj('barve.txt', './img/upload.png')

@@ -1,8 +1,11 @@
+import json
 import os
 import tkinter as tk
 from tkinter import Label, Button, filedialog
 from PIL import Image, ImageTk
+import numpy as np
 from styling import setup_styles
+import face_recognition
 from logic import upload_image, capture_image_from_webcam, primerjaj, save_largest_face, save_largest_face_upload, imageSimilarity, combine
 
 #FACE DETECTION -> OPENCV (+ TRAINED CLASSIFIER XML FILE)
@@ -14,16 +17,19 @@ def handle_upload_and_primerjaj():
     similarity_results = []
     faces_dir = 'faces'
     img1 = './img/face/upload.png'
+    image1 = face_recognition.load_image_file(img1)
+    face_encodings_1 = face_recognition.face_encodings(image1)
+    with open('fVectors.txt', 'r') as file:
+        feature_vectors = json.load(file)
+    i = 0
     for filename in os.listdir(faces_dir):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-            img2 = os.path.join(faces_dir, filename)
-            similarity_index = imageSimilarity(img1, img2)
+            feature_vector_index = np.array(feature_vectors[i])
+            similarity_index = imageSimilarity(face_encodings_1, feature_vector_index)
+            i = i + 1
             similarity_results.append((similarity_index, filename))
-    #similarity_results.sort(reverse=True)
-    #print("Zaznava obraza:\n")
+    i = 0
     result = primerjaj('barve.txt', './img/upload.png')
-    #print("Barvna sestava:\n")
-    #print(result)
     combined = combine(similarity_results, result)
     najblizja = combined[0][1] if result else "No result"
     status_label.config(text=f"Status: Result - {najblizja}")
@@ -36,13 +42,18 @@ def handle_capture_and_primerjaj():
     similarity_results = []
     faces_dir = 'faces'
     img1 = './capturedImages/face/CapturedImage.png'
+    image1 = face_recognition.load_image_file(img1)
+    face_encodings_1 = face_recognition.face_encodings(image1)
+    with open('fVectors.txt', 'r') as file:
+        feature_vectors = json.load(file)
+    i = 0
     for filename in os.listdir(faces_dir):
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-            img2 = os.path.join(faces_dir, filename)
-            similarity_index = imageSimilarity(img1, img2)
+            feature_vector_index = np.array(feature_vectors[i])
+            similarity_index = imageSimilarity(face_encodings_1, feature_vector_index)
+            i = i + 1
             similarity_results.append((similarity_index, filename))
-            #print(similarity_index, filename)
-    #print(similarity_results)
+    i = 0
     result = primerjaj('barve.txt', './capturedImages/CapturedImage.png')
     combined = combine(similarity_results, result)
     najblizja = combined[0][1] if result else "No result"
