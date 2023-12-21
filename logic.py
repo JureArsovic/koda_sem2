@@ -6,13 +6,17 @@ from tkinter import filedialog
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from cv2 import VideoCapture, destroyAllWindows, imshow, imwrite, waitKey
-import numpy as np
-import re
 import ast
 import extcolors
 import cv2
-from deepface import DeepFace
 import face_recognition
+import numpy as np
+import insightface
+from insightface.app import FaceAnalysis
+from insightface.data import get_image as ins_get_image
+import matplotlib.pyplot as plt
+from scipy.datasets import face 
+
 
 #FACE DETECTION -> OPENCV (+ TRAINED CLASSIFIER XML FILE)
 #FACE RECOGNITION -> HISTOGRAM COMPARISON (NON WHITE PIXELS)
@@ -253,3 +257,28 @@ def scale_tuple_values(arr):
     return scaled_arr
 
 #primerjaj('barve.txt', './img/upload.png')
+
+def faceswap(poster):
+    print(poster)
+    app = FaceAnalysis(name='buffalo_l')
+    app.prepare(ctx_id=0, det_size=(640, 640))
+
+    swapper = insightface.model_zoo.get_model('inswapper_128.onnx', dowload=False, download_zip=False)
+
+    captured = cv2.imread('./capturedImages/CapturedImage.png')
+    poster = cv2.imread(poster)
+    res = poster.copy()
+
+    faces = app.get(poster)
+
+    captured_faces = app.get(captured)
+    captured_face = captured_faces[0]
+
+    for face in faces:
+        res = swapper.get(res, face, captured_face, paste_back=True)
+
+    # Save the result using OpenCV
+    cv2.imwrite('./img/result.png', res)
+
+
+#faceswap('./posters/#Xmas (2022).png')

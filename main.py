@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 import numpy as np
 from styling import setup_styles
 import face_recognition
-from logic import upload_image, capture_image_from_webcam, primerjaj, save_largest_face, save_largest_face_upload, imageSimilarity, combine
+from logic import upload_image, capture_image_from_webcam, primerjaj, faceswap, save_largest_face, save_largest_face_upload, imageSimilarity, combine
 
 #FACE DETECTION -> OPENCV (+ TRAINED CLASSIFIER XML FILE)
 #FACE comparison -> HISTOGRAM COMPARISON (NON WHITE PIXELS)
@@ -33,7 +33,8 @@ def handle_upload_and_primerjaj():
     combined = combine(similarity_results, result)
     najblizja = combined[0][1] if result else "No result"
     status_label.config(text=f"Status: Result - {najblizja}")
-    display_poster(najblizja)
+    faceswap('./posters/' + najblizja)
+    display_poster('./img/result.png')
 
 
 def handle_capture_and_primerjaj():
@@ -58,7 +59,8 @@ def handle_capture_and_primerjaj():
     combined = combine(similarity_results, result)
     najblizja = combined[0][1] if result else "No result"
     status_label.config(text=f"Status: Result - {najblizja}")
-    display_poster(najblizja)
+    faceswap('./posters/' + najblizja)
+    display_poster('./img/result.png')
 
 
 root = tk.Tk()
@@ -99,7 +101,8 @@ status_label.pack(side="left", padx=20)
 
 def display_poster(result):
     if result:
-        poster_path = f"./posters/{result}"
+        poster_path = f"{result}"
+        print("Poster path: ", poster_path)
         poster_image = Image.open(poster_path)
         poster_image = poster_image.resize((300, 300), Image.Resampling.LANCZOS)
         poster_photo = ImageTk.PhotoImage(poster_image)
