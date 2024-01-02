@@ -22,14 +22,18 @@ from scipy.datasets import face
 #FACE RECOGNITION -> HISTOGRAM COMPARISON (NON WHITE PIXELS)
 
 def upload_image(root, image_label, style):
-    file_types = [('JPEG Files', '*.jpeg;*.jpg'), ('PNG Files', '*.png')]
-    file_path = filedialog.askopenfilename(filetypes=file_types)
+    file_path = filedialog.askopenfilename(
+        title="Select Image File",
+        filetypes=[("Image files", "*.jpg;*.jpeg;*.png")]
+    )
 
     if file_path:
         try:
             original_image = Image.open(file_path)
 
-            display_image = original_image.resize((300, 300), Image.Resampling.LANCZOS)
+            # A MORVA TUKI RESIZEAT? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            # ALSO NAJ NRDI S CHATGPTJEM DVE PLACEHOLDER SLIKI ZA ZAČETEK
+            display_image = original_image.resize((400, 400), Image.Resampling.LANCZOS)
             photo = ImageTk.PhotoImage(display_image)
 
             if image_label:
@@ -96,7 +100,7 @@ def capture_image_from_webcam(root, image_label, style):
             messagebox.showinfo("Success", "Image captured and saved.")
 
             image = Image.open(image_path)
-            base_width = 300
+            base_width = 500
             w_percent = (base_width / float(image.size[0]))
             h_size = int((float(image.size[1]) * float(w_percent)))
 
@@ -266,6 +270,28 @@ def faceswap(poster):
     swapper = insightface.model_zoo.get_model('inswapper_128.onnx', dowload=False, download_zip=False)
 
     captured = cv2.imread('./capturedImages/CapturedImage.png')
+    poster = cv2.imread(poster)
+    res = poster.copy()
+
+    faces = app.get(poster)
+
+    captured_faces = app.get(captured)
+    captured_face = captured_faces[0]
+
+    for face in faces:
+        res = swapper.get(res, face, captured_face, paste_back=True)
+
+    # Save the result using OpenCV
+    cv2.imwrite('./img/result.png', res)
+
+def faceswap_upload(poster):
+    print(poster)
+    app = FaceAnalysis(name='buffalo_l')
+    app.prepare(ctx_id=0, det_size=(640, 640))
+
+    swapper = insightface.model_zoo.get_model('inswapper_128.onnx', dowload=False, download_zip=False)
+
+    captured = cv2.imread('./img/upload.png')
     poster = cv2.imread(poster)
     res = poster.copy()
 
