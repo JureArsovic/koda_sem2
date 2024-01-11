@@ -31,8 +31,6 @@ def upload_image(root, image_label, style):
         try:
             original_image = Image.open(file_path)
 
-            # A MORVA TUKI RESIZEAT? XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-            # ALSO NAJ NRDI S CHATGPTJEM DVE PLACEHOLDER SLIKI ZA ZAČETEK
             display_image = original_image.resize((400, 400), Image.Resampling.LANCZOS)
             photo = ImageTk.PhotoImage(display_image)
 

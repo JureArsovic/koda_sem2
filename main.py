@@ -11,6 +11,25 @@ from logic import upload_image, capture_image_from_webcam, primerjaj, faceswap, 
 #FACE DETECTION -> OPENCV (+ TRAINED CLASSIFIER XML FILE)
 #FACE comparison -> HISTOGRAM COMPARISON (NON WHITE PIXELS)
 
+def display_placeholder():
+    placeholder_path = 'ph.jpg'  # Path to your placeholder image
+    placeholder_image = Image.open(placeholder_path)
+    
+    # Resize for image_label
+    resized_image = placeholder_image.resize((300, 375), Image.Resampling.LANCZOS)
+    placeholder_photo = ImageTk.PhotoImage(resized_image)
+    image_label.config(image=placeholder_photo)
+    image_label.image = placeholder_photo
+
+    # Resize for poster_label (if different size is needed)
+    # If the size for poster_label is the same, you can reuse the 'placeholder_photo'
+    resized_poster = placeholder_image.resize((300, 375), Image.Resampling.LANCZOS)  # Adjust size as needed
+    poster_photo = ImageTk.PhotoImage(resized_poster)
+    poster_label.config(image=poster_photo)
+    poster_label.image = poster_photo
+
+
+
 def handle_upload_and_primerjaj():
     status_label.config(text=f"Status: Processing ...")
     upload_image(root, image_label, style)
@@ -99,6 +118,8 @@ image_label.grid(row=0, column=1, sticky="e")
 poster_label = tk.Label(content, bg=style["bg"])
 poster_label.grid(row=0, column=3, sticky="w")
 
+display_placeholder()
+
 upload_button = Button(content, text="Upload Image", command=handle_upload_and_primerjaj, **style["button"], font=("Comic Sans MS", 12))
 upload_button.grid(row=1, column=1, sticky="ne")
 
@@ -111,11 +132,12 @@ status_label.pack(side="left", padx=10)
 
 
 def display_poster(result):
+    print("POSTER: ", result)
     if result:
         poster_path = f"{result}"
         print("Poster path: ", poster_path)
         poster_image = Image.open(poster_path)
-        poster_image = poster_image.resize((400, 500), Image.Resampling.LANCZOS)
+        poster_image = poster_image.resize((300, 375), Image.Resampling.LANCZOS)
         poster_photo = ImageTk.PhotoImage(poster_image)
         poster_label.config(image=poster_photo)
         poster_label.image = poster_photo
@@ -126,4 +148,3 @@ def display_poster(result):
 
 root.mainloop()
 
-#TODO: ODSTRANIVA STATUS BAR?
