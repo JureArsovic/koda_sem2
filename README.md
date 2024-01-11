@@ -1,4 +1,5 @@
 IOI Končni projekt: Preslikava obraza na filmske plakate
+
 Avtorja: Erik Mažgon, Jure Arsovič
 
 Navodila za uporabo:
