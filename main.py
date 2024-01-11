@@ -12,18 +12,20 @@ from logic import upload_image, capture_image_from_webcam, primerjaj, faceswap, 
 #FACE comparison -> HISTOGRAM COMPARISON (NON WHITE PIXELS)
 
 def display_placeholder():
-    placeholder_path = 'ph.jpg'  # Path to your placeholder image
-    placeholder_image = Image.open(placeholder_path)
+    placeholder_path1 = 'dh.png'
+    placeholder_image1 = Image.open(placeholder_path1)
+    placeholder_path2 = 'mPoster.png'
+    placeholder_image2 = Image.open(placeholder_path2)
     
     # Resize for image_label
-    resized_image = placeholder_image.resize((300, 375), Image.Resampling.LANCZOS)
+    resized_image = placeholder_image1.resize((300, 375), Image.Resampling.LANCZOS)
     placeholder_photo = ImageTk.PhotoImage(resized_image)
     image_label.config(image=placeholder_photo)
     image_label.image = placeholder_photo
 
     # Resize for poster_label (if different size is needed)
     # If the size for poster_label is the same, you can reuse the 'placeholder_photo'
-    resized_poster = placeholder_image.resize((300, 375), Image.Resampling.LANCZOS)  # Adjust size as needed
+    resized_poster = placeholder_image2.resize((300, 375), Image.Resampling.LANCZOS)  # Adjust size as needed
     poster_photo = ImageTk.PhotoImage(resized_poster)
     poster_label.config(image=poster_photo)
     poster_label.image = poster_photo
